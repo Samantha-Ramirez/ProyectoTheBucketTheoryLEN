@@ -33,7 +33,7 @@ public class Supplier implements Runnable {
         while (BeerBarrels.hasActiveStudents() && !Thread.currentThread().isInterrupted()) {
             // Check interruption and active students before synchronizing
             if (!BeerBarrels.hasActiveStudents() || Thread.currentThread().isInterrupted()) {
-                System.out.println("Proveedor " + id + " para barril " + targetBarrel + " termina (sin estudiantes o interrumpido).");
+                System.out.println("Proveedor "+ id+ " para barril " + targetBarrel + " finalizo su jornada");
                 return;
             }
 
@@ -56,6 +56,6 @@ public class Supplier implements Runnable {
                 }
             }
         }
-        System.out.println("Proveedor " + id + " para barril " + targetBarrel + " termina (sin estudiantes activos).");
+        System.out.println("Proveedor "+ id+ " para barril " + targetBarrel + " finalizo su jornada");
     }
 }
