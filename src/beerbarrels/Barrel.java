@@ -15,7 +15,7 @@ public class Barrel {
     }
 
     // Agregar cerveza a un barril, manejar desborde
-    public synchronized int addBeer(int amount, List<Barrel> barrels, List<String> visited) {
+    public synchronized int addBeer(int amount, List<Barrel> barrels, List<String> visited, int supplier) {
         // Add current barrel to visited list
         List<String> newVisited = new ArrayList<>(visited);
         newVisited.add(id);
@@ -23,7 +23,7 @@ public class Barrel {
         if (currentAmount + amount <= maxCapacity) {
             // Si capacidad suficiente: agregar toda la cerveza
             currentAmount += amount;
-            System.out.println("Se añadieron " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
+            System.out.println("El proveedor "+ supplier +" añadio " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
             notifyAll();
             return 0;
         } else {
@@ -31,7 +31,7 @@ public class Barrel {
             int spaceAvailable = maxCapacity - currentAmount;
             int overflow = amount - spaceAvailable;
             currentAmount = maxCapacity;
-            System.out.println("Se añadieron " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");
+            System.out.println("El proveedor "+ supplier +" añadio " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");
             notifyAll();
             
             // Transferir desborde a vecino, evitando barriles ya visitados
