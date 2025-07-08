@@ -20,6 +20,8 @@ public class Barrel {
         List<String> newVisited = new ArrayList<>(visited);
         newVisited.add(id);
 
+        System.out.println("Proveedor "+ supplier +" quiere añadir " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
+
         if (currentAmount + amount <= maxCapacity) {
             // Si capacidad suficiente: agregar toda la cerveza
             currentAmount += amount;
