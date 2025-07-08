@@ -236,7 +236,7 @@ public class BeerBarrels {
             // Esperar a que todos los hilos de proveedores terminen
             for (Thread thread : supplierThreads) {
                 try {
-                    System.out.println("Esperando a los proveedores");
+                    System.out.println("Proveedores terminan su jornada");
                     thread.join();
                 } catch (InterruptedException e) {
                     System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
