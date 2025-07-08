@@ -54,7 +54,6 @@ public class Barrel {
         }
     }
 
-    // Wrapper method for initial call
     public synchronized int addBeer(int amount, List<Barrel> barrels) {
         return addBeer(amount, barrels, new ArrayList<>());
     }
@@ -63,13 +62,11 @@ public class Barrel {
     public synchronized int consumeBeer(int amount) {
         if (currentAmount >= amount) {
             currentAmount -= amount;
-            // Print moved to StudentThread.java
             notifyAll();
             return amount;
         } else {
             int served = currentAmount;
             currentAmount = 0;
-            // Print moved to StudentThread.java
             notifyAll();
             return served;
         }
