@@ -1,0 +1,11 @@
+A, 9, 0
+B, 7, 0
+C, 4, 3
+Estudiantes, 0
+Proveedores, 1
+
+Barrels: A(9,0), B(7,0), C(4,3).
+Supplier (for A or C, assume C from input order) adds 5L to C.
+C: currentAmount=3, maxCapacity=4 → adds 1L, overflows 4L to B.
+B: currentAmount=0, maxCapacity=7 → absorbs 4L.
+No students, so supplier exits after one attempt (or interrupted).

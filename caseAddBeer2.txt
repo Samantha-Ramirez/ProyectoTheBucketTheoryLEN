@@ -1,0 +1,10 @@
+A, 1000, 1000
+B, 7, 7
+C, 4, 4
+Estudiantes, 0
+Proveedores, 1
+
+Barrels: A(1000,1000), B(7,7), C(4,4).
+Supplier (for A) adds 5L to A → all 5L overflows to B.
+B is full → 5L becomes spillage.
+No students, supplier exits after spillage.

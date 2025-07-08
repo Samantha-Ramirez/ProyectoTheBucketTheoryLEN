@@ -18,13 +18,13 @@ public class StudentThread implements Runnable {
     public void run() {
         // Verificar si el estudiante es mayor de edad
         if (student.age < LEGAL_AGE) {
-            System.out.println(student.name + " es menor de edad (" + student.age + ")");
+            System.out.println(student.name + " es menor de edad (" + student.age + ") y no puede pedir cerveza.");
             return;
         }
 
         // Continuar sirviendo cerveza mientras el estudiante tenga tickets
         while (student.tickets > 0) {
-            int beersRequested = random.nextInt(student.tickets) + 1; // Random entre 1 y tickets
+            int beersRequested = random.nextInt(student.tickets) + 1;
             int beersServed = 0;
             boolean served = false;
 
@@ -36,6 +36,7 @@ public class StudentThread implements Runnable {
                         student.tickets -= amountServed;
                         beersServed = amountServed;
                         served = true;
+                        System.out.println(student.name + " se sirvió " + amountServed + "L del barril " + barrel.id + ". Litros actuales: " + barrel.currentAmount + ", tickets sobrantes: " + student.tickets);
                         break;
                     }
                     // Si no hay suficiente cerveza: esperar reabastecimiento
@@ -63,7 +64,7 @@ public class StudentThread implements Runnable {
 
             // Si no quedan tickets: el estudiante se retira
             if (student.tickets <= 0) {
-                System.out.println(student.name + " no tiene más tickets y se retira de la fiesta");
+                System.out.println(student.name + " no tiene más tickets y se retira de la fiesta.");
                 break;
             }
         }

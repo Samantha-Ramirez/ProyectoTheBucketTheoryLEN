@@ -1,0 +1,11 @@
+A, 100, 0
+B, 200, 1
+C, 300, 2
+Estudiantes, 1
+Proveedores, 1
+Luis, 20, 10
+
+test12 :: IO ()
+test12 = assertEqual "Test initialBarrels 2"
+                    ((100,0), (200,1), (300,2))
+                    (initialBarrels (100, 0) (200, 1) (300, 2))

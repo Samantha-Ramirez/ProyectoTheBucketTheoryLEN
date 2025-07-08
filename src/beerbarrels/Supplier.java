@@ -5,7 +5,7 @@ import java.util.List;
 public class Supplier implements Runnable {
     private List<Barrel> barrels;
     private String targetBarrel;
-    private static final int BEER_TO_ADD = 5; // Cantidad de cerveza a añadir por intento
+    private static final int BEER_TO_ADD = 5;
 
     public Supplier(List<Barrel> barrels, String targetBarrel) {
         this.barrels = barrels;
@@ -17,7 +17,7 @@ public class Supplier implements Runnable {
         // Validar barril objetivo (solo A o C permitido)
         if (!targetBarrel.equals("A") && !targetBarrel.equals("C")) {
             System.out.println("Error: proveedor intentó añadir cerveza al barril " + targetBarrel + ", solo A o C permitidos.");
-            BeerBarrels.addSpillage(0); // Asegura que el proveedor contribuya a la terminación
+            BeerBarrels.addSpillage(0);
             return;
         }
 
@@ -30,10 +30,11 @@ public class Supplier implements Runnable {
         }
 
         // Continuar añadiendo cerveza mientras haya estudiantes activos
-        while (BeerBarrels.hasActiveStudents()) {
+        while (BeerBarrels.hasActiveStudents() && !Thread.currentThread().isInterrupted()) {
             synchronized (barrel) {
-                if (!BeerBarrels.hasActiveStudents()) {
-                    break; // Salir si no hay estudiantes activos
+                if (!BeerBarrels.hasActiveStudents() || Thread.currentThread().isInterrupted()) {
+                    System.out.println("Proveedor para barril " + targetBarrel + " termina (sin estudiantes o interrumpido).");
+                    return;
                 }
                 if (barrel.currentAmount < barrel.maxCapacity) {
                     // Añadir cerveza y manejar desborde
@@ -46,13 +47,15 @@ public class Supplier implements Runnable {
                     // Barril lleno, esperar consumo
                     System.out.println("Barril " + targetBarrel + " está lleno, proveedor esperando...");
                     try {
-                        barrel.wait();
+                        barrel.wait(1000); // Timeout to check interruption
                     } catch (InterruptedException e) {
                         System.out.println("Proveedor para barril " + targetBarrel + " interrumpido, terminando...");
+                        Thread.currentThread().interrupt(); // Restore interrupted status
                         return;
                     }
                 }
             }
         }
+        System.out.println("Proveedor para barril " + targetBarrel + " termina (sin estudiantes activos).");
     }
 }

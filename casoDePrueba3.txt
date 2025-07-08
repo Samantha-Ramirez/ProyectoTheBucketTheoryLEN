@@ -1,7 +1,0 @@
-A, 10, 10
-B, 7, 0
-C, 3, 0
-Estudiantes, 2
-Proveedores, 3
-Juan, 20, 5
-Maria, 22, 3

@@ -81,11 +81,16 @@ public class BeerBarrels {
                     return false;
                 }
 
-                if (maxCapacity <= 0 || currentAmount < 0 || currentAmount > maxCapacity) {
+                if (maxCapacity < 0 || currentAmount < 0) {
                     System.out.println("Error: valores fuera de rango en línea " + lineNumber);
                     return false;
                 }
 
+                if (currentAmount > maxCapacity) {
+                    currentAmount = maxCapacity;
+                }
+
+                System.out.println("Leyendo barril: ID=" + id + ", maxCapacity=" + maxCapacity + ", currentAmount=" + currentAmount);
                 barrels.add(new Barrel(id, maxCapacity, currentAmount));
             }
 
@@ -100,7 +105,8 @@ public class BeerBarrels {
             int numStudents;
             try {
                 numStudents = Integer.parseInt(line.split(",")[1].trim());
-                if (numStudents <= 0) {
+                // Suposición: se puede 0 estudiantes
+                if (numStudents < 0) {
                     System.out.println("Error: número de estudiantes inválido en línea " + lineNumber);
                     return false;
                 }
@@ -108,6 +114,8 @@ public class BeerBarrels {
                 System.out.println("Error: número de estudiantes no numérico en línea " + lineNumber);
                 return false;
             }
+
+            System.out.println("Leyendo número de estudiantes: " + numStudents);
 
             // Leer número de proveedores
             line = br.readLine();
@@ -119,7 +127,8 @@ public class BeerBarrels {
 
             try {
                 numSuppliers = Integer.parseInt(line.split(",")[1].trim());
-                if (numSuppliers <= 0) {
+                // Suposición: se puede 0 proveedores
+                if (numSuppliers < 0) {
                     System.out.println("Error: número de proveedores inválido en línea " + lineNumber);
                     return false;
                 }
@@ -127,6 +136,8 @@ public class BeerBarrels {
                 System.out.println("Error: número de proveedores no numérico en línea " + lineNumber);
                 return false;
             }
+
+            System.out.println("Leyendo número de proveedores: " + numSuppliers);
 
             // Leer datos de estudiantes
             for (int i = 0; i < numStudents; i++) {
@@ -163,6 +174,7 @@ public class BeerBarrels {
                     return false;
                 }
 
+                System.out.println("Leyendo estudiante: nombre=" + name + ", edad=" + age + ", tickets=" + tickets);
                 students.add(new Student(name, age, tickets));
             }
 
@@ -172,54 +184,54 @@ public class BeerBarrels {
                 return false;
             }
 
-            // Disparar hilos para estudiantes
-            for (Student student : students) {
-                if (student.age >= 21) { // Solo contar estudiantes de edad legal
-                    incrementActiveStudents();
-                }
-                Thread studentThread = new Thread(new StudentThread(student, barrels) {
-                    @Override
-                    public void run() {
-                        super.run();
-                        decrementActiveStudents(); // Decrementar estudiantes activos cuando termina
-                    }
-                });
-                studentThreads.add(studentThread);
-                studentThread.start();
-            }
+            // // Disparar hilos para estudiantes
+            // for (Student student : students) {
+            //     if (student.age >= 18) {
+            //         incrementActiveStudents();
+            //     }
+            //     Thread studentThread = new Thread(new StudentThread(student, barrels) {
+            //         @Override
+            //         public void run() {
+            //             super.run();
+            //             decrementActiveStudents();
+            //         }
+            //     });
+            //     studentThreads.add(studentThread);
+            //     studentThread.start();
+            // }
 
-            // Disparar hilos para proveedores
-            for (int i = 0; i < numSuppliers; i++) {
-                String targetBarrel = (i % 2 == 0) ? "A" : "C";
-                Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel));
-                supplierThreads.add(supplierThread);
-                supplierThread.start();
-            }
+            // // Disparar hilos para proveedores
+            // for (int i = 0; i < numSuppliers; i++) {
+            //     String targetBarrel = (i % 2 == 0) ? "A" : "C";
+            //     Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel));
+            //     supplierThreads.add(supplierThread);
+            //     supplierThread.start();
+            // }
 
-            // Esperar a que todos los hilos de estudiantes terminen
-            for (Thread thread : studentThreads) {
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    System.out.println("Error al esperar hilos de estudiantes: " + e.getMessage());
-                    return false;
-                }
-            }
+            // // Esperar a que todos los hilos de estudiantes terminen
+            // for (Thread thread : studentThreads) {
+            //     try {
+            //         thread.join();
+            //     } catch (InterruptedException e) {
+            //         System.out.println("Error al esperar hilos de estudiantes: " + e.getMessage());
+            //         return false;
+            //     }
+            // }
 
-            // Interrumpir hilos de proveedores cuando no hay estudiantes activos
-            for (Thread thread : supplierThreads) {
-                thread.interrupt();
-            }
+            // // Interrumpir hilos de proveedores cuando no hay estudiantes activos
+            // for (Thread thread : supplierThreads) {
+            //     thread.interrupt();
+            // }
 
-            // Esperar a que todos los hilos de proveedores terminen
-            for (Thread thread : supplierThreads) {
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
-                    return false;
-                }
-            }
+            // // Esperar a que todos los hilos de proveedores terminen
+            // for (Thread thread : supplierThreads) {
+            //     try {
+            //         thread.join();
+            //     } catch (InterruptedException e) {
+            //         System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
+            //         return false;
+            //     }
+            // }
 
             return true;
         } catch (IOException e) {
