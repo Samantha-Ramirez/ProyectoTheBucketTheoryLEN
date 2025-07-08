@@ -18,7 +18,7 @@ public class StudentThread implements Runnable {
     public void run() {
         // Verificar si el estudiante es mayor de edad
         if (student.age < LEGAL_AGE) {
-            System.out.println(student.name + " es menor de edad (" + student.age + ") y no puede pedir cerveza.");
+            System.out.println(student.name + " es menor de edad (" + student.age + ")");
             return;
         }
 
@@ -63,7 +63,7 @@ public class StudentThread implements Runnable {
 
             // Si no quedan tickets: el estudiante se retira
             if (student.tickets <= 0) {
-                System.out.println(student.name + " no tiene más tickets y se retira de la fiesta.");
+                System.out.println(student.name + " no tiene más tickets y se retira de la fiesta");
                 break;
             }
         }

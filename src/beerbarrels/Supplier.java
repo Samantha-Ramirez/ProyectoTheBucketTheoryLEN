@@ -32,6 +32,9 @@ public class Supplier implements Runnable {
         // Continuar añadiendo cerveza mientras haya estudiantes activos
         while (BeerBarrels.hasActiveStudents()) {
             synchronized (barrel) {
+                if (!BeerBarrels.hasActiveStudents()) {
+                    break; // Salir si no hay estudiantes activos
+                }
                 if (barrel.currentAmount < barrel.maxCapacity) {
                     // Añadir cerveza y manejar desborde
                     int spillage = barrel.addBeer(BEER_TO_ADD, barrels);
@@ -45,7 +48,7 @@ public class Supplier implements Runnable {
                     try {
                         barrel.wait();
                     } catch (InterruptedException e) {
-                        System.out.println("Proveedor para barril " + targetBarrel + " interrumpido: " + e.getMessage());
+                        System.out.println("Proveedor para barril " + targetBarrel + " interrumpido, terminando...");
                         return;
                     }
                 }

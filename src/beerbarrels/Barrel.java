@@ -26,7 +26,7 @@ public class Barrel {
             int spaceAvailable = maxCapacity - currentAmount;
             int overflow = amount - spaceAvailable;
             currentAmount = maxCapacity;
-            System.out.println("Se añadieron " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");
+            System.out.println("Se añadieron " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", Litros desbordados: " + overflow);
             notifyAll(); // Notify estudiantes en wait
             
             // Transferir desborde a vecino

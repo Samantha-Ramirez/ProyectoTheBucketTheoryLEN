@@ -43,6 +43,8 @@ public class BeerBarrels {
     public static boolean processInputFile(String fileName) {
         List<Barrel> barrels = new ArrayList<>();
         List<Student> students = new ArrayList<>();
+        List<Thread> studentThreads = new ArrayList<>();
+        List<Thread> supplierThreads = new ArrayList<>();
         int numSuppliers = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -171,9 +173,8 @@ public class BeerBarrels {
             }
 
             // Disparar hilos para estudiantes
-            List<Thread> threads = new ArrayList<>();
             for (Student student : students) {
-                if (student.age >= 18) { // Solo contar estudiantes de edad legal
+                if (student.age >= 21) { // Solo contar estudiantes de edad legal
                     incrementActiveStudents();
                 }
                 Thread studentThread = new Thread(new StudentThread(student, barrels) {
@@ -183,7 +184,7 @@ public class BeerBarrels {
                         decrementActiveStudents(); // Decrementar estudiantes activos cuando termina
                     }
                 });
-                threads.add(studentThread);
+                studentThreads.add(studentThread);
                 studentThread.start();
             }
 
@@ -191,16 +192,31 @@ public class BeerBarrels {
             for (int i = 0; i < numSuppliers; i++) {
                 String targetBarrel = (i % 2 == 0) ? "A" : "C";
                 Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel));
-                threads.add(supplierThread);
+                supplierThreads.add(supplierThread);
                 supplierThread.start();
             }
 
-            // Esperar a que todos los hilos terminen
-            for (Thread thread : threads) {
+            // Esperar a que todos los hilos de estudiantes terminen
+            for (Thread thread : studentThreads) {
                 try {
                     thread.join();
                 } catch (InterruptedException e) {
-                    System.out.println("Error al esperar hilos: " + e.getMessage());
+                    System.out.println("Error al esperar hilos de estudiantes: " + e.getMessage());
+                    return false;
+                }
+            }
+
+            // Interrumpir hilos de proveedores cuando no hay estudiantes activos
+            for (Thread thread : supplierThreads) {
+                thread.interrupt();
+            }
+
+            // Esperar a que todos los hilos de proveedores terminen
+            for (Thread thread : supplierThreads) {
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
                     return false;
                 }
             }
