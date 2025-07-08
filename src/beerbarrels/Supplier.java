@@ -39,7 +39,7 @@ public class Supplier implements Runnable {
 
             synchronized (barrel) {
                 if (barrel.currentAmount < barrel.maxCapacity) {
-                    int spillage = barrel.addBeer(BEER_TO_ADD, barrels);
+                    int spillage = barrel.addBeer(BEER_TO_ADD, barrels, id);
                     if (spillage > 0) {
                         BeerBarrels.addSpillage(spillage);
                         System.out.println("Se perdieron " + spillage + "L por desborde en el sistema desde barril " + targetBarrel + ".");
