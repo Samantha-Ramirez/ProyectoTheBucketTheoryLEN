@@ -5,7 +5,7 @@ import java.util.List;
 public class Supplier implements Runnable {
     private List<Barrel> barrels;
     private String targetBarrel;
-    private static final int BEER_TO_ADD = (int) (Math.random() * 10);
+    private final int BEER_TO_ADD = (int) (Math.random() * 10);
 
     public Supplier(List<Barrel> barrels, String targetBarrel) {
         this.barrels = barrels;
