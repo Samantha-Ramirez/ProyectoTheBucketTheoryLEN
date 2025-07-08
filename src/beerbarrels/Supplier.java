@@ -5,7 +5,7 @@ import java.util.List;
 public class Supplier implements Runnable {
     private List<Barrel> barrels;
     private String targetBarrel;
-    private static final int BEER_TO_ADD = 5;
+    private static final int BEER_TO_ADD = 1;
 
     public Supplier(List<Barrel> barrels, String targetBarrel) {
         this.barrels = barrels;
