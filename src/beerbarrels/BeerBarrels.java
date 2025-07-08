@@ -219,7 +219,6 @@ public class BeerBarrels {
             // Esperar a que todos los hilos de estudiantes terminen
             for (Thread thread : studentThreads) {
                 try {
-                    System.out.println("Esperar thread estudiante");
                     thread.join();
                 } catch (InterruptedException e) {
                     System.out.println("Error al esperar hilos de estudiantes: " + e.getMessage());
@@ -236,7 +235,6 @@ public class BeerBarrels {
             // Esperar a que todos los hilos de proveedores terminen
             for (Thread thread : supplierThreads) {
                 try {
-                    System.out.println("Esperar thread proveedor");
                     thread.join();
                 } catch (InterruptedException e) {
                     System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
