@@ -19,14 +19,14 @@ public class Barrel {
         // Add current barrel to visited list
         List<String> newVisited = new ArrayList<>(visited);
         newVisited.add(id);
-        if (id!="B"){
+       if (!id.equals("B")){
 
         System.out.println("Proveedor "+ supplier +" quiere añadir " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);}
 
         if (currentAmount + amount <= maxCapacity) {
             // Si capacidad suficiente: agregar toda la cerveza
             currentAmount += amount;
-            if (id!="B"){
+            if (!id.equals("B")){
                 System.out.println("El proveedor "+ supplier +" añadio " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
             
             } else{
@@ -39,7 +39,7 @@ public class Barrel {
             int spaceAvailable = maxCapacity - currentAmount;
             int overflow = amount - spaceAvailable;
             currentAmount = maxCapacity;
-         if (id!="B"){
+        if (!id.equals("B")){
             System.out.println("El proveedor "+ supplier +" añadio " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");
          }
         else{
