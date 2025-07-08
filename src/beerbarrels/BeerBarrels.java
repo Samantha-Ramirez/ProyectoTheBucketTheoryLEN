@@ -210,7 +210,8 @@ public class BeerBarrels {
             // Disparar hilos para proveedores
             for (int i = 0; i < numSuppliers; i++) {
                 String targetBarrel = (i % 2 == 0) ? "A" : "C";
-                Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel));
+                int id = i;
+                Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel, id));
                 supplierThreads.add(supplierThread);
                 supplierThread.start();
             }
