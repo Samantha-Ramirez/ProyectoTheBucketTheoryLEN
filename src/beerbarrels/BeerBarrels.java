@@ -229,14 +229,12 @@ public class BeerBarrels {
 
             // Interrumpir hilos de proveedores cuando no hay estudiantes activos
             for (Thread thread : supplierThreads) {
-                System.out.println("Proveedores terminan su jornada");
                 thread.interrupt();
             }
 
             // Esperar a que todos los hilos de proveedores terminen
             for (Thread thread : supplierThreads) {
                 try {
-                    System.out.println("Proveedores terminan su jornada");
                     thread.join();
                 } catch (InterruptedException e) {
                     System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
