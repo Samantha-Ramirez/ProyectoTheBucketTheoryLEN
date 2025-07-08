@@ -49,13 +49,13 @@ public class Supplier implements Runnable {
                     try {
                         barrel.wait(100); // Short timeout to release monitor frequently
                     } catch (InterruptedException e) {
-                        System.out.println("Proveedor para barril " + targetBarrel + " interrumpido, terminando...");
+                        System.out.println("Proveedor "+ id+ " para barril " + targetBarrel + " finalizo su jornada");
                         Thread.currentThread().interrupt();
                         return;
                     }
                 }
             }
         }
-        System.out.println("Proveedor para barril " + targetBarrel + " termina (sin estudiantes activos).");
+        System.out.println("Proveedor " + id + " para barril " + targetBarrel + " termina (sin estudiantes activos).");
     }
 }
