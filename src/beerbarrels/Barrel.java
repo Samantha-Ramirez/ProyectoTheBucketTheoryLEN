@@ -27,9 +27,10 @@ public class Barrel {
             // Si capacidad suficiente: agregar toda la cerveza
             currentAmount += amount;
             if (id!="B"){
-            System.out.println("El proveedor "+ supplier +" añadio " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount}
-            else{
-                System.out.println("El proveedor "+ supplier +" añadio por desborde " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount}
+                System.out.println("El proveedor "+ supplier +" añadio " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
+            
+            } else{
+                System.out.println("El proveedor "+ supplier +" añadio por desborde " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
             }
             notifyAll();
             return 0;
