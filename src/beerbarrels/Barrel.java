@@ -19,13 +19,18 @@ public class Barrel {
         // Add current barrel to visited list
         List<String> newVisited = new ArrayList<>(visited);
         newVisited.add(id);
+        if (id!="B"){
 
-        System.out.println("Proveedor "+ supplier +" quiere añadir " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
+        System.out.println("Proveedor "+ supplier +" quiere añadir " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);}
 
         if (currentAmount + amount <= maxCapacity) {
             // Si capacidad suficiente: agregar toda la cerveza
             currentAmount += amount;
-            System.out.println("El proveedor "+ supplier +" añadio " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
+            if (id!="B"){
+            System.out.println("El proveedor "+ supplier +" añadio " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount}
+            else{
+                System.out.println("El proveedor "+ supplier +" añadio por desborde " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount}
+            }
             notifyAll();
             return 0;
         } else {
@@ -33,8 +38,13 @@ public class Barrel {
             int spaceAvailable = maxCapacity - currentAmount;
             int overflow = amount - spaceAvailable;
             currentAmount = maxCapacity;
+         if (id!="B"){
             System.out.println("El proveedor "+ supplier +" añadio " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");
-            notifyAll();
+         }
+        else{
+          System.out.println("El proveedor "+ supplier +" añadio por desborde " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");  
+        }
+             notifyAll();
             
             // Transferir desborde a vecino, evitando barriles ya visitados
             if (id.equals("A")) {
