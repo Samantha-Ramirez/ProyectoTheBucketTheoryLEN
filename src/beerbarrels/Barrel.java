@@ -39,13 +39,14 @@ public class Barrel {
             int spaceAvailable = maxCapacity - currentAmount;
             int overflow = amount - spaceAvailable;
             currentAmount = maxCapacity;
+            notifyAll();
+
         if (!id.equals("B")){
             System.out.println("El proveedor "+ supplier +" añadio " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");
          }
         else{
           System.out.println("El proveedor "+ supplier +" añadio por desborde " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");  
         }
-             notifyAll();
             
             // Transferir desborde a vecino, evitando barriles ya visitados
             if (id.equals("A")) {
