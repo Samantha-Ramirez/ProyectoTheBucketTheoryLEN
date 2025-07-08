@@ -229,7 +229,7 @@ public class BeerBarrels {
 
             // Interrumpir hilos de proveedores cuando no hay estudiantes activos
             for (Thread thread : supplierThreads) {
-                System.out.println("Interrumpir thread proveedor");
+                System.out.println("Proveedores terminan su jornada");
                 thread.interrupt();
             }
 
