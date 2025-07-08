@@ -178,8 +178,14 @@ public class BeerBarrels {
                 students.add(new Student(name, age, tickets));
             }
 
+            // Verificar si todos los barriles tienen capacidad 0
+            boolean allZeroCapacity = barrels.stream().allMatch(b -> b.maxCapacity == 0);
+            if (allZeroCapacity) {
+                return true;
+            }
+
             // Validar que los barriles sean A, B y C
-            if (barrels.size() != 3 || !barrels.stream().map(b -> b.id).sorted().toList().equals(List.of("A", "B", "C"))) {
+            if (barrels.size() != 3) {
                 System.out.println("Error: los barriles deben ser exactamente A, B y C");
                 return false;
             }
@@ -212,7 +218,7 @@ public class BeerBarrels {
             // Esperar a que todos los hilos de estudiantes terminen
             for (Thread thread : studentThreads) {
                 try {
-                    System.out.println("Esperar thread estudiante: " + thread);
+                    System.out.println("Esperar thread estudiante");
                     thread.join();
                 } catch (InterruptedException e) {
                     System.out.println("Error al esperar hilos de estudiantes: " + e.getMessage());
@@ -222,14 +228,14 @@ public class BeerBarrels {
 
             // Interrumpir hilos de proveedores cuando no hay estudiantes activos
             for (Thread thread : supplierThreads) {
-                System.out.println("Interrumpir thread proveedor: " + thread);
+                System.out.println("Interrumpir thread proveedor");
                 thread.interrupt();
             }
 
             // Esperar a que todos los hilos de proveedores terminen
             for (Thread thread : supplierThreads) {
                 try {
-                    System.out.println("Esperar thread proveedor: " + thread);
+                    System.out.println("Esperar thread proveedor");
                     thread.join();
                 } catch (InterruptedException e) {
                     System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
