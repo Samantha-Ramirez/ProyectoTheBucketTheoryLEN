@@ -37,10 +37,10 @@ public class Barrel {
             // Transferir desborde a vecino, evitando barriles ya visitados
             if (id.equals("A")) {
                 Barrel b = barrels.stream().filter(barr -> barr.id.equals("B") && !newVisited.contains("B")).findFirst().orElse(null);
-                return b != null ? b.addBeer(overflow, barrels, newVisited) : overflow;
+                return b != null ? b.addBeer(overflow, barrels, newVisited, supplier) : overflow;
             } else if (id.equals("C")) {
                 Barrel b = barrels.stream().filter(barr -> barr.id.equals("B") && !newVisited.contains("B")).findFirst().orElse(null);
-                return b != null ? b.addBeer(overflow, barrels, newVisited) : overflow;
+                return b != null ? b.addBeer(overflow, barrels, newVisited, supplier) : overflow;
             } else if (id.equals("B")) {
                 Barrel a = barrels.stream().filter(barr -> barr.id.equals("A") && !newVisited.contains("A")).findFirst().orElse(null);
                 Barrel c = barrels.stream().filter(barr -> barr.id.equals("C") && !newVisited.contains("C")).findFirst().orElse(null);
@@ -48,14 +48,14 @@ public class Barrel {
                     return overflow;
                 }
                 Barrel target = (a != null && (c == null || a.currentAmount <= c.currentAmount)) ? a : c;
-                return target != null ? target.addBeer(overflow, barrels, newVisited) : overflow;
+                return target != null ? target.addBeer(overflow, barrels, newVisited, supplier) : overflow;
             }
             return overflow;
         }
     }
 
-    public synchronized int addBeer(int amount, List<Barrel> barrels) {
-        return addBeer(amount, barrels, new ArrayList<>());
+    public synchronized int addBeer(int amount, List<Barrel> barrels, int supplier) {
+        return addBeer(amount, barrels, new ArrayList<>(), supplier);
     }
 
     // Consumir cerveza de este barril
