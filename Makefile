@@ -1,7 +1,7 @@
 SRCDIR = src
 BINDIR = bin
 MAINCLASS = beerbarrels.BeerBarrels
-INPUTFILE = input.txt
+INPUTFILE = casoDePrueba1.txt
 
 # Lista de archivos fuente
 SOURCES = $(wildcard $(SRCDIR)/beerbarrels/*.java)
