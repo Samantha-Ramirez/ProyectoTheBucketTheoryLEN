@@ -5,17 +5,39 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BeerBarrels {
+    private static final AtomicInteger totalSpillage = new AtomicInteger(0);
+    private static final AtomicInteger activeStudents = new AtomicInteger(0);
+
     public static void main(String[] args) {
         if (args.length != 1) {
-            System.out.println("Uso: java com.beerbarrels.BeerBarrels <archivo_entrada.txt>");
+            System.out.println("Uso: java beerbarrels.BeerBarrels <archivo_entrada.txt>");
             return;
         }
 
         if (!processInputFile(args[0])) {
             System.out.println("Error en la lectura del archivo o datos inválidos.");
+        } else {
+            System.out.println("Total de cerveza perdida por desborde: " + totalSpillage.get() + "L");
         }
+    }
+
+    public static void addSpillage(int amount) {
+        totalSpillage.addAndGet(amount);
+    }
+
+    public static void incrementActiveStudents() {
+        activeStudents.incrementAndGet();
+    }
+
+    public static void decrementActiveStudents() {
+        activeStudents.decrementAndGet();
+    }
+
+    public static boolean hasActiveStudents() {
+        return activeStudents.get() > 0;
     }
 
     public static boolean processInputFile(String fileName) {
@@ -142,43 +164,51 @@ public class BeerBarrels {
                 students.add(new Student(name, age, tickets));
             }
 
+            // Validar que los barriles sean A, B y C
+            if (barrels.size() != 3 || !barrels.stream().map(b -> b.id).sorted().toList().equals(List.of("A", "B", "C"))) {
+                System.out.println("Error: los barriles deben ser exactamente A, B y C");
+                return false;
+            }
+
+            // Disparar hilos para estudiantes
+            List<Thread> threads = new ArrayList<>();
+            for (Student student : students) {
+                if (student.age >= 18) { // Solo contar estudiantes de edad legal
+                    incrementActiveStudents();
+                }
+                Thread studentThread = new Thread(new StudentThread(student, barrels) {
+                    @Override
+                    public void run() {
+                        super.run();
+                        decrementActiveStudents(); // Decrementar estudiantes activos cuando termina
+                    }
+                });
+                threads.add(studentThread);
+                studentThread.start();
+            }
+
+            // Disparar hilos para proveedores
+            for (int i = 0; i < numSuppliers; i++) {
+                String targetBarrel = (i % 2 == 0) ? "A" : "C";
+                Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel));
+                threads.add(supplierThread);
+                supplierThread.start();
+            }
+
+            // Esperar a que todos los hilos terminen
+            for (Thread thread : threads) {
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    System.out.println("Error al esperar hilos: " + e.getMessage());
+                    return false;
+                }
+            }
+
+            return true;
         } catch (IOException e) {
             System.out.println("Error al leer el archivo: " + e.getMessage());
             return false;
         }
-
-        // Validar que los barriles sean A, B y C
-        if (barrels.size() != 3 || !barrels.stream().map(b -> b.id).sorted().toList().equals(List.of("A", "B", "C"))) {
-            System.out.println("Error: los barriles deben ser exactamente A, B y C");
-            return false;
-        }
-
-        // Disparar hilos para estudiantes
-        List<Thread> threads = new ArrayList<>();
-        for (Student student : students) {
-            Thread studentThread = new Thread(new StudentThread(student, barrels));
-            threads.add(studentThread);
-            studentThread.start();
-        }
-
-        // Disparar hilos para proveedores (alternando entre A y C)
-        for (int i = 0; i < numSuppliers; i++) {
-            String targetBarrel = (i % 2 == 0) ? "A" : "C";
-            Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel));
-            threads.add(supplierThread);
-            supplierThread.start();
-        }
-
-        // Esperar a que todos los hilos terminen (esto se ajustará en la Parte 3)
-        for (Thread thread : threads) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                System.out.println("Error al esperar hilos: " + e.getMessage());
-                return false;
-            }
-        }
-
-        return true;
     }
 }

@@ -7,7 +7,6 @@ public class StudentThread implements Runnable {
     private Student student;
     private List<Barrel> barrels;
     private static final int LEGAL_AGE = 18;
-    private static final int SLEEP_TIME_MS = 1000; // Tiempo de espera cuando no hay cerveza
     private final Random random = new Random();
 
     public StudentThread(Student student, List<Barrel> barrels) {
@@ -31,43 +30,34 @@ public class StudentThread implements Runnable {
 
             // Intentar servir la cantidad solicitada desde cada barril
             for (Barrel barrel : barrels) {
-                barrel.lock.lock();
-                try {
-                    if (barrel.currentAmount >= beersRequested) {
-                        // Si hay suficiente cerveza: servir todo lo solicitado
-                        barrel.currentAmount -= beersRequested;
-                        student.tickets -= beersRequested;
-                        beersServed = beersRequested;
-                        System.out.println(student.name + " se sirvió " + beersServed + "L del barril " + barrel.id +
-                                ". Litros sobrantes: " + barrel.currentAmount + "L, tickets sobrantes: " + student.tickets);
-                        served = true;
-                        break;
-                    } else if (barrel.currentAmount > 0) {
-                        // Si no hay suficiente cerveza: servir lo que está disponible
-                        beersServed = Math.min(barrel.currentAmount, beersRequested);
-                        barrel.currentAmount -= beersServed;
-                        student.tickets -= beersServed;
-                        System.out.println(student.name + " se sirvió " + beersServed + "L del barril " + barrel.id +
-                                " (todo lo disponible). Litros sobrantes: " + barrel.currentAmount + "L, tickets sobrantes: " + student.tickets);
+                synchronized (barrel) {
+                    int amountServed = barrel.consumeBeer(beersRequested);
+                    if (amountServed > 0) {
+                        student.tickets -= amountServed;
+                        beersServed = amountServed;
                         served = true;
                         break;
                     }
-                } finally {
-                    barrel.lock.unlock();
+                    // Si no hay suficiente cerveza: esperar reabastecimiento
+                    if (amountServed < beersRequested) {
+                        System.out.println(student.name + " necesita " + (beersRequested - amountServed) + "L más en barril " + barrel.id + ", esperando reabastecimiento...");
+                        try {
+                            barrel.wait();
+                        } catch (InterruptedException e) {
+                            System.out.println(student.name + " interrumpido durante la espera: " + e.getMessage());
+                            return;
+                        }
+                    }
                 }
             }
 
             // Actualizar la cantidad restante por servir en esta solicitud
             beersRequested -= beersServed;
 
-            // Si no se sirvió todo lo solicitado o no se sirvió nada: esperar
+            // Si no se sirvió todo lo solicitado o no se sirvió nada: intentar otro barril
             if (beersRequested > 0 || !served) {
-                System.out.println(student.name + " necesita " + beersRequested + "L más, esperando reabastecimiento...");
-                try {
-                    Thread.sleep(SLEEP_TIME_MS);
-                } catch (InterruptedException e) {
-                    System.out.println(student.name + " interrumpido durante la espera: " + e.getMessage());
-                    return;
+                if (!served) {
+                    System.out.println(student.name + " no encontró cerveza disponible, intentando otro barril...");
                 }
             }
 

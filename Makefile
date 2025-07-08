@@ -11,9 +11,6 @@ CLASSES = $(SOURCES:$(SRCDIR)/%.java=$(BINDIR)/%.class)
 
 all: prepare compile
 
-clean:
-	rm -rf $(BINDIR) || true
-
 prepare:
 	mkdir -p $(BINDIR)
 
@@ -27,3 +24,5 @@ execute: compile
 
 # CONSTRUCCION Y PRUEBAS DESDE LA CONSOLA
 # make execute
+# Para usar un archivo de entrada diferente:
+# make execute INPUTFILE=otroArchivo.txt
