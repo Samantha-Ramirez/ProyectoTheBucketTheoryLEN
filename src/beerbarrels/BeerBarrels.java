@@ -184,54 +184,54 @@ public class BeerBarrels {
                 return false;
             }
 
-            // // Disparar hilos para estudiantes
-            // for (Student student : students) {
-            //     if (student.age >= 18) {
-            //         incrementActiveStudents();
-            //     }
-            //     Thread studentThread = new Thread(new StudentThread(student, barrels) {
-            //         @Override
-            //         public void run() {
-            //             super.run();
-            //             decrementActiveStudents();
-            //         }
-            //     });
-            //     studentThreads.add(studentThread);
-            //     studentThread.start();
-            // }
+            // Disparar hilos para estudiantes
+            for (Student student : students) {
+                if (student.age >= 18) {
+                    incrementActiveStudents();
+                }
+                Thread studentThread = new Thread(new StudentThread(student, barrels) {
+                    @Override
+                    public void run() {
+                        super.run();
+                        decrementActiveStudents();
+                    }
+                });
+                studentThreads.add(studentThread);
+                studentThread.start();
+            }
 
-            // // Disparar hilos para proveedores
-            // for (int i = 0; i < numSuppliers; i++) {
-            //     String targetBarrel = (i % 2 == 0) ? "A" : "C";
-            //     Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel));
-            //     supplierThreads.add(supplierThread);
-            //     supplierThread.start();
-            // }
+            // Disparar hilos para proveedores
+            for (int i = 0; i < numSuppliers; i++) {
+                String targetBarrel = (i % 2 == 0) ? "A" : "C";
+                Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel));
+                supplierThreads.add(supplierThread);
+                supplierThread.start();
+            }
 
-            // // Esperar a que todos los hilos de estudiantes terminen
-            // for (Thread thread : studentThreads) {
-            //     try {
-            //         thread.join();
-            //     } catch (InterruptedException e) {
-            //         System.out.println("Error al esperar hilos de estudiantes: " + e.getMessage());
-            //         return false;
-            //     }
-            // }
+            // Esperar a que todos los hilos de estudiantes terminen
+            for (Thread thread : studentThreads) {
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    System.out.println("Error al esperar hilos de estudiantes: " + e.getMessage());
+                    return false;
+                }
+            }
 
-            // // Interrumpir hilos de proveedores cuando no hay estudiantes activos
-            // for (Thread thread : supplierThreads) {
-            //     thread.interrupt();
-            // }
+            // Interrumpir hilos de proveedores cuando no hay estudiantes activos
+            for (Thread thread : supplierThreads) {
+                thread.interrupt();
+            }
 
-            // // Esperar a que todos los hilos de proveedores terminen
-            // for (Thread thread : supplierThreads) {
-            //     try {
-            //         thread.join();
-            //     } catch (InterruptedException e) {
-            //         System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
-            //         return false;
-            //     }
-            // }
+            // Esperar a que todos los hilos de proveedores terminen
+            for (Thread thread : supplierThreads) {
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    System.out.println("Error al esperar hilos de proveedores: " + e.getMessage());
+                    return false;
+                }
+            }
 
             return true;
         } catch (IOException e) {
