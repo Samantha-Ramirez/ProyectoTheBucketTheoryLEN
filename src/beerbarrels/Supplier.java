@@ -21,7 +21,6 @@ public class Supplier implements Runnable {
             return;
         }
 
-        // Encontrar el barril objetivo
         Barrel barrel = barrels.stream().filter(b -> b.id.equals(targetBarrel)).findFirst().orElse(null);
         if (barrel == null) {
             System.out.println("Error: barril " + targetBarrel + " no encontrado.");
@@ -29,28 +28,27 @@ public class Supplier implements Runnable {
             return;
         }
 
-        // Continuar añadiendo cerveza mientras haya estudiantes activos
         while (BeerBarrels.hasActiveStudents() && !Thread.currentThread().isInterrupted()) {
+            // Check interruption and active students before synchronizing
+            if (!BeerBarrels.hasActiveStudents() || Thread.currentThread().isInterrupted()) {
+                System.out.println("Proveedor para barril " + targetBarrel + " termina (sin estudiantes o interrumpido).");
+                return;
+            }
+
             synchronized (barrel) {
-                if (!BeerBarrels.hasActiveStudents() || Thread.currentThread().isInterrupted()) {
-                    System.out.println("Proveedor para barril " + targetBarrel + " termina (sin estudiantes o interrumpido).");
-                    return;
-                }
                 if (barrel.currentAmount < barrel.maxCapacity) {
-                    // Añadir cerveza y manejar desborde
                     int spillage = barrel.addBeer(BEER_TO_ADD, barrels);
                     if (spillage > 0) {
                         BeerBarrels.addSpillage(spillage);
-                        System.out.println("Se perdieron " + spillage + "L por desborde en el sistema.");
+                        System.out.println("Se perdieron " + spillage + "L por desborde en el sistema desde barril " + targetBarrel + ".");
                     }
                 } else {
-                    // Barril lleno, esperar consumo
                     System.out.println("Barril " + targetBarrel + " está lleno, proveedor esperando...");
                     try {
-                        barrel.wait(1000); // Timeout to check interruption
+                        barrel.wait(100); // Short timeout to release monitor frequently
                     } catch (InterruptedException e) {
                         System.out.println("Proveedor para barril " + targetBarrel + " interrumpido, terminando...");
-                        Thread.currentThread().interrupt(); // Restore interrupted status
+                        Thread.currentThread().interrupt();
                         return;
                     }
                 }
