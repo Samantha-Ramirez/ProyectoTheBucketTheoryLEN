@@ -31,10 +31,20 @@ public class Supplier implements Runnable {
         }
 
         while (BeerBarrels.hasActiveStudents() && !Thread.currentThread().isInterrupted()) {
-            int spillage = barrel.addBeer(BEER_TO_ADD, barrels, id);
-            if (spillage > 0) {
-                BeerBarrels.addSpillage(spillage);
-                System.out.println("Se perdieron " + spillage + "L por desborde en el sistema desde barril " + targetBarrel + ".");
+            bool disponible=false;
+            for (Barrel barrel : barrels){
+                if(barrel.currentAmount < barrel.maxCapcity){
+                    disponible =true;
+                    break;
+                }
+            }
+            
+            if (disponible) {
+                int spillage = barrel.addBeer(BEER_TO_ADD, barrels, id);
+                if (spillage > 0) {
+                    BeerBarrels.addSpillage(spillage);
+                    System.out.println("Se perdieron " + spillage + "L por desborde en el sistema desde barril " + targetBarrel + ".");
+                }
             }
             try {
                 Thread.sleep(10);
