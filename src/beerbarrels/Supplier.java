@@ -6,12 +6,12 @@ public class Supplier implements Runnable {
     private List<Barrel> barrels;
     private String targetBarrel;
     private int id;
-    private int BEER_TO_ADD = (int) ((Math.random() * 10) + 1);
+    private final int BEER_TO_ADD = (int) ((Math.random() * 10) + 1);
 
     public Supplier(List<Barrel> barrels, String targetBarrel, int id) {
         this.barrels = barrels;
         this.targetBarrel = targetBarrel;
-        this.id=id;
+        this.id = id;
     }
 
     @Override
@@ -31,31 +31,19 @@ public class Supplier implements Runnable {
         }
 
         while (BeerBarrels.hasActiveStudents() && !Thread.currentThread().isInterrupted()) {
-            // Check interruption and active students before synchronizing
-            if (!BeerBarrels.hasActiveStudents() || Thread.currentThread().isInterrupted()) {
-                System.out.println("Proveedor "+ id+ " para barril " + targetBarrel + " finalizo su jornada");
+            int spillage = barrel.addBeer(BEER_TO_ADD, barrels, id);
+            if (spillage > 0) {
+                BeerBarrels.addSpillage(spillage);
+                System.out.println("Se perdieron " + spillage + "L por desborde en el sistema desde barril " + targetBarrel + ".");
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Proveedor " + id + " para barril " + targetBarrel + " finalizó su jornada");
+                Thread.currentThread().interrupt();
                 return;
             }
-
-            synchronized (barrel) {
-                if (barrel.currentAmount < barrel.maxCapacity) {
-                    int spillage = barrel.addBeer(BEER_TO_ADD, barrels, id);
-                    if (spillage > 0) {
-                        BeerBarrels.addSpillage(spillage);
-                        System.out.println("Se perdieron " + spillage + "L por desborde en el sistema desde barril " + targetBarrel + ".");
-                    }
-                } else {
-                    System.out.println("Barril " + targetBarrel + " está lleno, proveedor " + id + " esperando...");
-                    try {
-                        barrel.wait(100); // Short timeout to release monitor frequently
-                    } catch (InterruptedException e) {
-                        System.out.println("Proveedor "+ id+ " para barril " + targetBarrel + " finalizo su jornada");
-                        Thread.currentThread().interrupt();
-                        return;
-                    }
-                }
-            }
         }
-        System.out.println("Proveedor "+ id+ " para barril " + targetBarrel + " finalizo su jornada");
+        System.out.println("Proveedor " + id + " para barril " + targetBarrel + " finalizó su jornada");
     }
 }

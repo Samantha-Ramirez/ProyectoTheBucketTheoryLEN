@@ -5,8 +5,3 @@ Estudiantes, 2
 Proveedores, 2
 Ana, 19, 3
 Pedro, 22, 4
-
-test11 :: IO ()
-test11 = assertEqual "Test initialBarrels 1"
-                    ((10,10), (7,5), (3,2))
-                    (initialBarrels (10, 10) (7, 5) (3, 2))

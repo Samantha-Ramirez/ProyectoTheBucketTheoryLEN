@@ -94,6 +94,18 @@ public class BeerBarrels {
                 barrels.add(new Barrel(id, maxCapacity, currentAmount));
             }
 
+            // Verificar si todos los barriles tienen capacidad 0
+            boolean allZeroCapacity = barrels.stream().allMatch(b -> b.maxCapacity == 0);
+            if (allZeroCapacity) {
+                return true;
+            }
+
+            // Validar que los barriles sean 3
+            if (barrels.size() != 3) {
+                System.out.println("Error: los barriles deben ser exactamente 3");
+                return false;
+            }
+
             // Leer número de estudiantes
             line = br.readLine();
             lineNumber++;
@@ -178,18 +190,6 @@ public class BeerBarrels {
                 students.add(new Student(name, age, tickets));
             }
 
-            // Verificar si todos los barriles tienen capacidad 0
-            boolean allZeroCapacity = barrels.stream().allMatch(b -> b.maxCapacity == 0);
-            if (allZeroCapacity) {
-                return true;
-            }
-
-            // Validar que los barriles sean A, B y C
-            if (barrels.size() != 3) {
-                System.out.println("Error: los barriles deben ser exactamente A, B y C");
-                return false;
-            }
-
             // Disparar hilos para estudiantes
             for (Student student : students) {
                 if (student.age >= 18) {
@@ -207,11 +207,20 @@ public class BeerBarrels {
                 studentThread.start();
             }
 
+            // Esperar a que al menos un estudiante esté activo antes de iniciar proveedores
+            while (activeStudents.get() == 0 && !students.isEmpty()) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    System.out.println("Error al esperar estudiantes activos: " + e.getMessage());
+                    return false;
+                }
+            }
+
             // Disparar hilos para proveedores
             for (int i = 0; i < numSuppliers; i++) {
                 String targetBarrel = (i % 2 == 0) ? "A" : "C";
-                int id = i;
-                Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel, id));
+                Thread supplierThread = new Thread(new Supplier(barrels, targetBarrel, i));
                 supplierThreads.add(supplierThread);
                 supplierThread.start();
             }
@@ -219,7 +228,7 @@ public class BeerBarrels {
             // Esperar a que todos los hilos de estudiantes terminen
             for (Thread thread : studentThreads) {
                 try {
-                    System.out.println("Esperando a los estudiantes");
+                    System.out.println("Esperando thread estudiante: " + thread.getName());
                     thread.join();
                 } catch (InterruptedException e) {
                     System.out.println("Error al esperar hilos de estudiantes: " + e.getMessage());
@@ -227,7 +236,7 @@ public class BeerBarrels {
                 }
             }
 
-            // Interrumpir hilos de proveedores cuando no hay estudiantes activos
+            // Interrumpir hilos de proveedores
             for (Thread thread : supplierThreads) {
                 thread.interrupt();
             }

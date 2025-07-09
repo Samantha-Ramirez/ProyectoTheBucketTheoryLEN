@@ -14,64 +14,71 @@ public class Barrel {
         this.currentAmount = currentAmount;
     }
 
-    // Agregar cerveza a un barril, manejar desborde
-    public synchronized int addBeer(int amount, List<Barrel> barrels, List<String> visited, int supplier) {
-        // Add current barrel to visited list
+    public int addBeer(int amount, List<Barrel> barrels, List<String> visited, int supplier) {
         List<String> newVisited = new ArrayList<>(visited);
         newVisited.add(id);
-       if (!id.equals("B")){
+        int spillage = 0;
+        Barrel target = null;
 
-        System.out.println("Proveedor "+ supplier +" quiere añadir " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);}
-
-        if (currentAmount + amount <= maxCapacity) {
-            // Si capacidad suficiente: agregar toda la cerveza
-            currentAmount += amount;
-            if (!id.equals("B")){
-                System.out.println("El proveedor "+ supplier +" añadio " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
-            } else{
-                System.out.println("El proveedor "+ supplier +" añadio por desborde " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
+        synchronized (this) {
+            if (!id.equals("B")) {
+                System.out.println("Proveedor " + supplier + " quiere añadir " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
             }
-            notifyAll();
-            return 0;
-        } else {
-            // Si capacidad insuficiente: calcular overflow
-            int spaceAvailable = maxCapacity - currentAmount;
-            int overflow = amount - spaceAvailable;
-            currentAmount = maxCapacity;
-            notifyAll();
 
-        if (!id.equals("B")){
-            System.out.println("El proveedor "+ supplier +" añadio " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");
-         }
-        else{
-          System.out.println("El proveedor "+ supplier +" añadio por desborde " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + overflow + "L");  
+            if (currentAmount + amount <= maxCapacity) {
+                currentAmount += amount;
+                if (!id.equals("B")) {
+                    System.out.println("El proveedor " + supplier + " añadió " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
+                } else {
+                    System.out.println("El proveedor " + supplier + " añadió por desborde " + amount + "L al barril " + id + ". Litros actuales: " + currentAmount);
+                }
+                notifyAll();
+            } else {
+                int spaceAvailable = maxCapacity - currentAmount;
+                spillage = amount - spaceAvailable;
+                currentAmount = maxCapacity;
+                if (!id.equals("B")) {
+                    System.out.println("El proveedor " + supplier + " añadió " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + spillage + "L");
+                } else {
+                    System.out.println("El proveedor " + supplier + " añadió por desborde " + spaceAvailable + "L al barril " + id + " (lleno). Litros actuales: " + currentAmount + ", desborde: " + spillage + "L");
+                }
+                notifyAll();
+            }
         }
-            
-            // Transferir desborde a vecino, evitando barriles ya visitados
+
+        // Manejar overflow
+        if (spillage > 0) {
             if (id.equals("A")) {
-                Barrel b = barrels.stream().filter(barr -> barr.id.equals("B") && !newVisited.contains("B")).findFirst().orElse(null);
-                return b != null ? b.addBeer(overflow, barrels, newVisited, supplier) : overflow;
+                target = barrels.stream().filter(barr -> barr.id.equals("B") && !newVisited.contains("B")).findFirst().orElse(null);
             } else if (id.equals("C")) {
-                Barrel b = barrels.stream().filter(barr -> barr.id.equals("B") && !newVisited.contains("B")).findFirst().orElse(null);
-                return b != null ? b.addBeer(overflow, barrels, newVisited, supplier) : overflow;
+                target = barrels.stream().filter(barr -> barr.id.equals("B") && !newVisited.contains("B")).findFirst().orElse(null);
             } else if (id.equals("B")) {
                 Barrel a = barrels.stream().filter(barr -> barr.id.equals("A") && !newVisited.contains("A")).findFirst().orElse(null);
                 Barrel c = barrels.stream().filter(barr -> barr.id.equals("C") && !newVisited.contains("C")).findFirst().orElse(null);
                 if (a == null && c == null) {
-                    return overflow;
+                    System.out.println("Saliendo addBeer para barril " + id + ", spillage=" + spillage);
+                    return spillage;
                 }
-                Barrel target = (a != null && (c == null || a.currentAmount <= c.currentAmount)) ? a : c;
-                return target != null ? target.addBeer(overflow, barrels, newVisited, supplier) : overflow;
+                target = (a != null && (c == null || a.currentAmount <= c.currentAmount)) ? a : c;
             }
-            return overflow;
+            if (target != null) {
+                spillage = target.addBeer(spillage, barrels, newVisited, supplier);
+            }
         }
+
+        // Notify all barrels
+        for (Barrel barrel : barrels) {
+            synchronized (barrel) {
+                barrel.notifyAll();
+            }
+        }
+        return spillage;
     }
 
-    public synchronized int addBeer(int amount, List<Barrel> barrels, int supplier) {
+    public int addBeer(int amount, List<Barrel> barrels, int supplier) {
         return addBeer(amount, barrels, new ArrayList<>(), supplier);
     }
 
-    // Consumir cerveza de este barril
     public synchronized int consumeBeer(int amount) {
         if (currentAmount >= amount) {
             currentAmount -= amount;

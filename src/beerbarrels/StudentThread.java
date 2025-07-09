@@ -23,9 +23,8 @@ public class StudentThread implements Runnable {
         }
 
         // Continuar sirviendo cerveza mientras el estudiante tenga tickets
-        while (student.tickets > 0) {
+        while (student.tickets > 0 && !Thread.currentThread().isInterrupted()) {
             int beersRequested = random.nextInt(student.tickets) + 1;
-            int beersServed = 0;
             boolean served = false;
 
             // Intentar servir la cantidad solicitada desde cada barril
@@ -34,16 +33,16 @@ public class StudentThread implements Runnable {
                     int amountServed = barrel.consumeBeer(beersRequested);
                     if (amountServed > 0) {
                         student.tickets -= amountServed;
-                        beersServed = amountServed;
                         served = true;
                         System.out.println(student.name + " se sirvió " + amountServed + "L del barril " + barrel.id + ". Litros actuales: " + barrel.currentAmount + ", tickets sobrantes: " + student.tickets);
+                        barrel.notifyAll();
                         break;
                     }
                     // Si no hay suficiente cerveza: esperar reabastecimiento
                     if (amountServed < beersRequested) {
                         System.out.println(student.name + " necesita " + (beersRequested - amountServed) + "L más en barril " + barrel.id + ", esperando reabastecimiento...");
                         try {
-                            barrel.wait();
+                            barrel.wait(100);
                         } catch (InterruptedException e) {
                             System.out.println(student.name + " interrumpido durante la espera: " + e.getMessage());
                             return;
@@ -52,13 +51,13 @@ public class StudentThread implements Runnable {
                 }
             }
 
-            // Actualizar la cantidad restante por servir en esta solicitud
-            beersRequested -= beersServed;
-
-            // Si no se sirvió todo lo solicitado o no se sirvió nada: intentar otro barril
-            if (beersRequested > 0 || !served) {
-                if (!served) {
-                    System.out.println(student.name + " no encontró cerveza disponible, intentando otro barril...");
+            if (!served) {
+                System.out.println(student.name + " no encontró cerveza disponible, intentando otro barril...");
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    System.out.println(student.name + " interrumpido durante espera: " + e.getMessage());
+                    return;
                 }
             }
 
