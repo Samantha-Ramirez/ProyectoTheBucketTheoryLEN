@@ -31,15 +31,15 @@ public class Supplier implements Runnable {
         }
 
         while (BeerBarrels.hasActiveStudents() && !Thread.currentThread().isInterrupted()) {
-            bool disponible=false;
-            for (Barrel barrel : barrels){
-                if(barrel.currentAmount < barrel.maxCapcity){
-                    disponible =true;
+            boolean available = false;
+            for (Barrel b : barrels){
+                if(b.currentAmount < b.maxCapacity){
+                    available =true;
                     break;
                 }
             }
             
-            if (disponible) {
+            if (available) {
                 int spillage = barrel.addBeer(BEER_TO_ADD, barrels, id);
                 if (spillage > 0) {
                     BeerBarrels.addSpillage(spillage);
