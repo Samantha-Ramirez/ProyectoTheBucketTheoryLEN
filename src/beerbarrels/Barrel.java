@@ -66,7 +66,6 @@ public class Barrel {
             }
         }
 
-        // Notify all barrels
         for (Barrel barrel : barrels) {
             synchronized (barrel) {
                 barrel.notifyAll();
