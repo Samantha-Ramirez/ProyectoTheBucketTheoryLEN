@@ -31,7 +31,7 @@ public class StudentThread implements Runnable {
             for (Barrel barrel : barrels) {
                 synchronized (barrel) {
                     int amountServed = barrel.consumeBeer(beersRequested);
-                    if (amountServed > 0) {
+                    if (amountServed == beersRequested) {
                         student.tickets -= amountServed;
                         served = true;
                         System.out.println(student.name + " se sirvió " + amountServed + "L del barril " + barrel.id + ". Litros actuales: " + barrel.currentAmount + ", tickets sobrantes: " + student.tickets);
