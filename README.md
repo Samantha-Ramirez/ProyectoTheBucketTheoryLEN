@@ -64,5 +64,7 @@ Nuestro proyecto consta de 5 archivos Java que describen el funcionamiento del m
 
 - while (BeerBarrels.hasActiveStudents() && !Thread.currentThread().isInterrupted()): El proceso se ejecuta mientras hayan estudiantes activos y no se interrumpa
 
-  - int spillage = barrel.addBeer(BEER_TO_ADD, barrels, id): Intenta llenar constantemente el barril target y calcula la perdida de desbordamiento luego del proceso. Luego se detiene temporalmente y continua.
+  - for (Barrel b : barrels): verifica que existan barriles no llenos al completo.
+
+  - int spillage = barrel.addBeer(BEER_TO_ADD, barrels, id): Intenta llenar el barril target y calcula la perdida de desbordamiento luego del proceso. Luego se detiene temporalmente y continua.
  
