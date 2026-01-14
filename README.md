@@ -1,4 +1,4 @@
-# ProyectoTheBucketTheoryLEN
+# The Bucket Theory
 
 Nuestro proyecto consta de 5 archivos Java que describen el funcionamiento del mismo
 
