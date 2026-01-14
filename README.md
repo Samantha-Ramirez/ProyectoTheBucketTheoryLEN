@@ -1,7 +1,11 @@
 # The Bucket Theory
 
-Nuestro proyecto consta de 5 archivos Java que describen el funcionamiento del mismo
+## Colaboradores
 
+- **Marcel Mejías**
+- **Samantha Ramirez**
+
+## Estructura del código
 #Barrel
 
 - public class Barrel: Crea la clase barrel y la inicializa con un id, capacidad y maxima capacidad.
